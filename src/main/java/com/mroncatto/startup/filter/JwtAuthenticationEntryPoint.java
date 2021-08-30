@@ -1,10 +1,7 @@
 package com.mroncatto.startup.filter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.mroncatto.startup.constant.SecurityConstant;
 import com.mroncatto.startup.domain.HttpResponse;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.Http403ForbiddenEntryPoint;
 import org.springframework.stereotype.Component;

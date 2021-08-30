@@ -10,9 +10,12 @@ import com.mroncatto.startup.service.EmailService;
 import com.mroncatto.startup.service.LoginAttemptService;
 import com.mroncatto.startup.service.UserService;
 import freemarker.template.TemplateException;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -24,32 +27,19 @@ import org.springframework.validation.BindingResult;
 import javax.mail.MessagingException;
 import javax.persistence.NoResultException;
 import java.io.IOException;
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 import static com.mroncatto.startup.constant.UserConstant.*;
 
 @Service
-@Transactional
-@Qualifier("UserDetailsService")
-public class UserServiceImpl implements UserService, UserDetailsService {
+@RequiredArgsConstructor
+@Slf4j
+public class UserServiceImpl implements UserService{
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
     private final EmailService emailService;
     private final BCryptPasswordEncoder passwordEncoder;
     private final LoginAttemptService loginAttemptService;
-
-    @Autowired
-    public UserServiceImpl(UserRepository userRepository, EmailService emailService,
-                           BCryptPasswordEncoder passwordEncoder, LoginAttemptService loginAttemptService,
-                           RoleRepository roleRepository) {
-        this.userRepository = userRepository;
-        this.emailService = emailService;
-        this.passwordEncoder = passwordEncoder;
-        this.loginAttemptService = loginAttemptService;
-        this.roleRepository = roleRepository;
-    }
 
     @Override
     public List<User> findAll() {
@@ -202,19 +192,5 @@ public class UserServiceImpl implements UserService, UserDetailsService {
             return null;
         }
 
-    }
-
-
-    @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        User user = this.userRepository.findUserByUsername(username);
-        if(user == null){
-            throw new UsernameNotFoundException(USER_NOT_FOUND_BY_USERNAME + username);
-        } else {
-            validateLoginAttempt(user);
-            user.setLastLoginDate(new Date());
-            this.userRepository.save(user);
-            return new UserPrincipal(user);
-        }
     }
 }

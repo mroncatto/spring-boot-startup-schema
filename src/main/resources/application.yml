@@ -3,11 +3,6 @@ server:
   error:
     whitelabel:
       enable: false
-logging:
-  level:
-    org:
-      hibernate:
-        SQL: debug
 spring:
   datasource:
     url: jdbc:mysql://localhost:3306/startup?serverTimezone=America/Asuncion
@@ -15,7 +10,7 @@ spring:
     password: 123456
     driver-class-name: com.mysql.cj.jdbc.Driver
   jpa:
-    show-sql: true
+    show-sql: false
     hibernate:
       ddl-auto: create-drop
     properties:
@@ -39,9 +34,14 @@ springdoc:
     disable-swagger-default-url: true
     url: /v3/api-docs/
     filter: false
-    path: /docs
+    path: /
     doc-expansion: none
 jwt:
-  secret: MYPASSWORDSECRET
+  secret: Sq2RXfyC4LmvkmSOUl/7hQ2LRehQzlT3aUCFzfr3FDA=
+logging:
+  level:
+    org:
+      hibernate:
+        SQL: error
 
 

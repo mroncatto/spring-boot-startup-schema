@@ -19,7 +19,6 @@ public class LoginAttemptServiceImpl implements LoginAttemptService {
     private final LoadingCache<String, Integer> loginAttemptCache;
 
     public LoginAttemptServiceImpl() {
-        super();
         this.loginAttemptCache = CacheBuilder.newBuilder().expireAfterWrite(15, MINUTES).maximumSize(100)
                 .build(new CacheLoader<String, Integer>() {
                     public Integer load(String key) {
