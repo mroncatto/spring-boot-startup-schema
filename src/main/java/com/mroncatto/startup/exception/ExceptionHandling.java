@@ -1,5 +1,6 @@
 package com.mroncatto.startup.exception;
 
+import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.exceptions.TokenExpiredException;
 import com.mroncatto.startup.domain.HttpResponse;
 import com.mroncatto.startup.exception.domain.*;
@@ -65,6 +66,12 @@ public class ExceptionHandling {
     // Token expired
     @ExceptionHandler(TokenExpiredException.class)
     public ResponseEntity<HttpResponse> tokenExpiredException(TokenExpiredException exception) {
+        return createHttpResponse(HttpStatus.UNAUTHORIZED, exception.getMessage());
+    }
+
+    // Token cannot be verified
+    @ExceptionHandler(JWTVerificationException.class)
+    public ResponseEntity<HttpResponse> jWTVerificationException(JWTVerificationException exception) {
         return createHttpResponse(HttpStatus.UNAUTHORIZED, exception.getMessage());
     }
 

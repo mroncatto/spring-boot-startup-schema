@@ -3,8 +3,8 @@ package com.mroncatto.startup.security;
 import com.mroncatto.startup.filter.CustomAuthenticationFilter;
 import com.mroncatto.startup.filter.JwtAuthorizationFilter;
 import com.mroncatto.startup.service.LoginAttemptService;
+import com.mroncatto.startup.util.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -24,13 +24,10 @@ import static org.springframework.http.HttpMethod.POST;
 @EnableWebSecurity
 @RequiredArgsConstructor
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
-
     private final BCryptPasswordEncoder passwordEncoder;
     private final UserDetailsService userDetailsService;
     private final LoginAttemptService loginAttemptService;
-
-    @Value("${jwt.secret}")
-    private String secret;
+    private final JwtTokenProvider jwtTokenProvider;
 
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
@@ -39,7 +36,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        CustomAuthenticationFilter customAuthenticationFilter = new CustomAuthenticationFilter(authenticationManagerBean(), this.loginAttemptService, this.secret);
+        CustomAuthenticationFilter customAuthenticationFilter = new CustomAuthenticationFilter(authenticationManagerBean(), this.loginAttemptService, this.jwtTokenProvider);
         customAuthenticationFilter.setFilterProcessesUrl("/auth/token");
         customAuthenticationFilter.setPostOnly(true);
         http.csrf().disable();
@@ -48,7 +45,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         http.authorizeRequests().antMatchers(PUBLIC_URLS).permitAll();
         http.authorizeRequests().anyRequest().authenticated();
         http.addFilter(customAuthenticationFilter);
-        http.addFilterBefore(new JwtAuthorizationFilter(this.secret), UsernamePasswordAuthenticationFilter.class);
+        http.addFilterBefore(new JwtAuthorizationFilter(this.jwtTokenProvider), UsernamePasswordAuthenticationFilter.class);
     }
 
     @Bean
